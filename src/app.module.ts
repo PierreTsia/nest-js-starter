@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ItemsModule } from './items/items.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
@@ -9,11 +8,14 @@ import { I18nModule, I18nJsonParser } from 'nestjs-i18n';
 import { TranslationService } from './translation/translation.service';
 import configuration from './config/configuration';
 import * as path from 'path';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
-import { AllExceptionsFilter } from './utils/exceptions.filters';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { TextParserModule } from './text-parser/text-parser.module';
+import { TextParserService } from './text-parser/text-parser.service';
+import { ProjectsModule } from './projects/projects.module';
+import { ChaptersModule } from './chapters/chapters.module';
+import { CommentsModule } from './comments/comments.module';
+import { AnnotationsModule } from './annotations/annotations.module';
 
 @Module({
   imports: [
@@ -31,19 +33,15 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
       context: ({ req, connection }) =>
         connection ? { req: connection.context } : { req },
     }),
-    ItemsModule,
     AuthModule,
     UsersModule,
+    TextParserModule,
+    ProjectsModule,
+    ChaptersModule,
+    CommentsModule,
+    AnnotationsModule,
   ],
   controllers: [AppController],
-  providers: [
-    TranslationService,
-    AppService,
-    { provide: APP_FILTER, useClass: AllExceptionsFilter },
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-  ],
+  providers: [TranslationService, AppService, TextParserService],
 })
 export class AppModule {}

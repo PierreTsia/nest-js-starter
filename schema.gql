@@ -2,13 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type ItemType {
-  id: ID!
-  title: String!
-  price: Float!
-  description: String!
-}
-
 type UserType {
   id: ID!
   username: String!
@@ -21,23 +14,111 @@ type AuthPayload {
   user: UserType!
 }
 
+type ChapterType {
+  id: ID!
+  title: String!
+}
+
+type ProjectType {
+  id: ID
+  title: String!
+  description: String!
+  chapters: [ChapterType!]!
+}
+
+type RawLinesType {
+  line: Float
+  text: String
+}
+
+type RawTextType {
+  text: String
+}
+
+type ParagraphType {
+  id: ID
+  chapter: ChapterType!
+  index: Float!
+  words: [String!]!
+  annotations: [String!]!
+}
+
+type SearchResultType {
+  paragraph: ParagraphType!
+  paragraphIndex: Float!
+  wordIndex: Float!
+  label: String!
+  extract: String!
+}
+
+type CommentType {
+  id: ID
+  content: String!
+  createdAt: String!
+  createdBy: UserType!
+  project: ProjectType
+  chapter: ChapterType
+}
+
+type AnnotationType {
+  id: ID!
+  chapter: ChapterType!
+  label: String!
+  start: CoordType!
+  end: CoordType!
+  type: String!
+  createdBy: UserType!
+  createdAt: String!
+  comments: [CommentType!]!
+}
+
+type CoordType {
+  paragraphIndex: Float!
+  wordIndex: Float!
+}
+
 type Query {
-  items: [ItemType!]!
-  item(id: ID!): ItemType!
   me: UserType!
   login(email: String!, password: String!): AuthPayload!
+  findProjects: [ProjectType!]!
+  chapterLines(input: ChapterTextInput!): [RawLinesType!]!
+  fullText(chapterId: String!): RawTextType!
+  searchParagraphs(searchInput: SearchParagraphsInput!): [SearchResultType!]!
+}
+
+input ChapterTextInput {
+  chapterId: String!
+  start: Float
+  end: Float
+}
+
+input SearchParagraphsInput {
+  projectWide: Boolean!
+  queryString: String!
+  chapterId: String!
 }
 
 type Mutation {
-  createItem(input: ItemInput!): ItemType!
-  updateItem(input: ItemInput!, id: ID!): ItemType!
-  deleteItem(id: ID!): ItemType!
-  populateItems(count: Float!): [ItemType!]!
   signup(email: String!, username: String!, password: String!): AuthPayload!
+  createProject(projectInput: ProjectInput!): ProjectType!
+  annotate(input: AnnotationInput!): AnnotationType!
 }
 
-input ItemInput {
+input ProjectInput {
   title: String!
-  price: Int!
   description: String!
+}
+
+input AnnotationInput {
+  id: ID
+  chapter: ID!
+  label: String!
+  start: CoordInput!
+  end: CoordInput!
+  type: String!
+}
+
+input CoordInput {
+  paragraphIndex: Float!
+  wordIndex: Float!
 }

@@ -10,16 +10,11 @@ import { AuthService } from '../auth.service';
 import { Reflector } from '@nestjs/core';
 import { Role } from '../roles.enum';
 import { ROLES_KEY } from '../roles.decorator';
-import { ItemsService } from '../../items/items.service';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   private extract = ExtractJwt.fromAuthHeaderAsBearerToken();
-  constructor(
-    private itemsService: ItemsService,
-    private authService: AuthService,
-    private reflector: Reflector,
-  ) {}
+  constructor(private authService: AuthService, private reflector: Reflector) {}
 
   getRequest(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context);
